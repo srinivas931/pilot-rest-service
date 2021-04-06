@@ -23,4 +23,9 @@ public class GreetingController {
     public ResponseEntity<Greeting> add(@PathVariable long greetingId) {
         return ResponseEntity.ok(new Greeting(greetingId, "New Greeting Created"));
     }
+
+    @PostMapping
+    public ResponseEntity<Greeting> add(@RequestBody Greeting greeting) {
+        return ResponseEntity.ok(greeting);
+    }
 }

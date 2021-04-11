@@ -1,13 +1,14 @@
 package com.example.restservice.payroll;
 
-import javax.annotation.Generated;
+import org.springframework.hateoas.RepresentationModel;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.util.Objects;
 
 @Entity
-public class Employee {
+public class Employee extends RepresentationModel<Employee> {
 
     private @Id @GeneratedValue Long id;
     private String name;

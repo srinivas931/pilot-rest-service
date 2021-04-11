@@ -30,11 +30,11 @@ public class EmployeeController {
     }
 
     @GetMapping
-    CollectionModel<EntityModel<Employee>> all() {
+    public CollectionModel<EntityModel<Employee>> all() {
         // return repository.findAll();
         List<EntityModel<Employee>> employees = repository.findAll().stream()
-            .map(assembler::toModel)
-            .collect(Collectors.toList());
+        .map(assembler::toModel)
+        .collect(Collectors.toList());
 
         return CollectionModel.of(employees, linkTo(methodOn(EmployeeController.class).all()).withSelfRel());
     }
@@ -45,7 +45,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/{id}")
-    EntityModel<Employee> one(@PathVariable Long id) {
+    public EntityModel<Employee> one(@PathVariable Long id) {
         Employee employee = repository.findById(id)
                 .orElseThrow(() -> new EmployeeNotFoundException(id));
         //Link link = new Link("http://localhost:8080/spring-security-rest/api/customers/10A");

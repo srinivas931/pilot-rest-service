@@ -2,6 +2,7 @@ package com.example.restservice;
 
 import com.example.restservice.exception.EmployeeNotFoundException;
 import com.example.restservice.payroll.Employee;
+import com.example.restservice.payroll.EmployeeModelAssembler;
 import com.example.restservice.payroll.repository.EmployeeRepository;
 import org.hibernate.EntityMode;
 import org.springframework.hateoas.CollectionModel;
@@ -21,18 +22,19 @@ public class EmployeeController {
 
     private final EmployeeRepository repository;
 
-    EmployeeController(EmployeeRepository repository) {
+    private final EmployeeModelAssembler assembler;
+
+    EmployeeController(EmployeeRepository repository, EmployeeModelAssembler assembler) {
         this.repository = repository;
+        this.assembler = assembler;
     }
 
     @GetMapping
     CollectionModel<EntityModel<Employee>> all() {
         // return repository.findAll();
         List<EntityModel<Employee>> employees = repository.findAll().stream()
-        .map(employee -> EntityModel.of(employee,
-                linkTo(methodOn(EmployeeController.class).one(employee.getId())).withSelfRel(),
-                linkTo(methodOn(EmployeeController.class).all()).withRel("employees")))
-        .collect(Collectors.toList());
+            .map(assembler::toModel)
+            .collect(Collectors.toList());
 
         return CollectionModel.of(employees, linkTo(methodOn(EmployeeController.class).all()).withSelfRel());
     }
@@ -43,12 +45,13 @@ public class EmployeeController {
     }
 
     @GetMapping("/{id}")
-    Employee one(@PathVariable Long id) {
+    EntityModel<Employee> one(@PathVariable Long id) {
         Employee employee = repository.findById(id)
                 .orElseThrow(() -> new EmployeeNotFoundException(id));
-        Link link = new Link("http://localhost:8080/spring-security-rest/api/customers/10A");
+        //Link link = new Link("http://localhost:8080/spring-security-rest/api/customers/10A");
+        //return employee.add(link);
 
-        return employee.add(link);
+        return assembler.toModel(employee);
     }
 
     @PutMapping("/{id}")
